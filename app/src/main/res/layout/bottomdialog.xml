@@ -1,6 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/background"
+    android:padding="6dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
+    <EditText
+        android:id="@+id/SubD"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:gravity="center"
+        android:background="@drawable/strok"
+        android:hint="Subject Name"
+        android:padding="13dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.096" />
+
+    <EditText
+        android:id="@+id/GradeD"
+        android:layout_width="190dp"
+        android:layout_height="55dp"
+        android:background="@drawable/strok"
+        android:hint="Grade"
+        android:gravity="center"
+        android:padding="13dp"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/SubD"
+        app:layout_constraintVertical_bias="0.033" />
+
+    <EditText
+        android:id="@+id/CreditD"
+        android:layout_width="190dp"
+        android:layout_height="55dp"
+        android:background="@drawable/strok"
+        android:gravity="center"
+        android:hint="Credit"
+        android:padding="13dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@+id/GradeD"
+        app:layout_constraintTop_toBottomOf="@+id/SubD"
+        app:layout_constraintVertical_bias="0.033" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/AddBtn"
+        android:layout_width="match_parent"
+        android:layout_height="91dp"
+        android:background="@color/black"
+        android:text="Add"
+        android:textColor="@color/white"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/SubD"
+        app:layout_constraintVertical_bias="0.168" />
 </androidx.constraintlayout.widget.ConstraintLayout>

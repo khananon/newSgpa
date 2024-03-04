@@ -5,6 +5,9 @@ plugins {
 android {
     namespace 'com.example.newsgpa'
     compileSdk 34
+    buildFeatures{
+        viewBinding true
+    }
 
     defaultConfig {
         applicationId "com.example.newsgpa"
@@ -37,4 +40,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation "androidx.appcompat:appcompat:1.0.2"
+    implementation 'com.google.code.gson:gson:2.8.9'
+
+    implementation 'com.github.fornewid:neumorphism:0.3.2'
 }
