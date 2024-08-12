@@ -28,6 +28,7 @@
         android:layout_marginTop="52dp"
         android:background="@drawable/blackstrock"
         android:hint="Name"
+
         android:padding="16dp"
         android:textColor="@color/black"
         android:textColorHint="#464646"
@@ -68,6 +69,7 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/black"
             android:text="Male"
+
             android:buttonTint="@color/black"
             android:textColor="@color/black"
             android:textStyle="bold" />
@@ -99,4 +101,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/radioGroup"
         app:layout_constraintVertical_bias="0.191" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -59,7 +59,6 @@
                     android:id="@+id/blackCircle"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:layout_centerVertical="true"
                     android:layout_marginStart="60dp"
                     android:layout_marginTop="2.5dp"
                     android:background="@drawable/round_view" />

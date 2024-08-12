@@ -1,12 +1,7 @@
 package com.example.newsgpa;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.app.Dialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -15,125 +10,152 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-
 
 public class MainActivity extends AppCompatActivity {
     ArrayList<SubjectModel> arrSub = new ArrayList<>();
     RvAdapter adapter;
     ImageView Dp;
     TextView StudentName, collegeName, helloTextView;
-
     RecyclerView Rv;
-    Button Calculatebtn,lgButton;
+    Button Calculatebtn, lgButton;
     ExtendedFloatingActionButton btnOpenDlg;
+
+    private FirebaseAuth mAuth;
+    private  FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SharedPreferences preferences = getSharedPreferences("My_setting", MODE_PRIVATE);
-        String name = preferences.getString("name", "");
-        String gender = preferences.getString("gender", "");
-        String college = preferences.getString("college", "");
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         Dp = findViewById(R.id.displayPic);
         StudentName = findViewById(R.id.StudentName);
         collegeName = findViewById(R.id.clgName);
         helloTextView = findViewById(R.id.helloTextView);
-        StudentName.setText(name);
-        collegeName.setText(college);
-        lgButton=findViewById(R.id.lgbutton);
-        lgButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.clear();
-                editor.commit();
-                finish();
-                Toast.makeText(MainActivity.this, "Activity Logout!!", Toast.LENGTH_SHORT).show();
-            }});
-        // Set the profile image based on gender
-        if (gender != null) {
-            if (gender.equalsIgnoreCase("male")) {
-                Dp.setImageResource(R.drawable.boy);
-                helloTextView.setTextColor(getResources().getColor(R.color.Blue));
-            } else if (gender.equalsIgnoreCase("female")) {
-                Dp.setImageResource(R.drawable.girl);
-                helloTextView.setTextColor(getResources().getColor(R.color.Pink));
-            } else {
-                // Set a default image if gender is not recognized
-                Dp.setImageResource(R.drawable.boy);
-                helloTextView.setTextColor(getResources().getColor(R.color.Blue));
-            }
-        } else {
-            // Handle the case where gender is null (provide a default or show an error message)
-            Dp.setImageResource(R.drawable.boy); // Setting a default image for null gender
-        }
+         TextView backgroundtext= findViewById(R.id.textView3);
+
+        lgButton = findViewById(R.id.lgbutton);
+        lgButton.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            startActivity(new Intent(MainActivity.this, googleAuth.class));
+            finish();
+            Toast.makeText(MainActivity.this, "Logged out!", Toast.LENGTH_SHORT).show();
+        });
+
+        fetchUserData();
 
         Rv = findViewById(R.id.Rview);
         btnOpenDlg = findViewById(R.id.AddSubBtn);
 
+        btnOpenDlg.setOnClickListener(view -> {
+            Dialog dialog = new Dialog(MainActivity.this);
+            dialog.setContentView(R.layout.add_update);
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
-        btnOpenDlg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Dialog dialog = new Dialog(MainActivity.this);
-                dialog.setContentView(R.layout.add_update);
-                EditText edName = dialog.findViewById(R.id.ubjectNameD);
-                EditText edCredit = dialog.findViewById(R.id.CreditD);
-                EditText edGrade = dialog.findViewById(R.id.GradeD);
-                Button btnAction = dialog.findViewById(R.id.BtnD);
-                btnAction.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        String SubjectName = " ", GradeM = " ", CreditM = " ";
-                        if (!edName.getText().toString().equals("")) {
-                            SubjectName = edName.getText().toString();
-                        } else {
-                            Toast.makeText(MainActivity.this, "Please Enter Subject Name", Toast.LENGTH_SHORT).show();
-                        }
-                        if (!edCredit.getText().toString().equals("")) {
-                            CreditM = edCredit.getText().toString();
-                        } else {
-                            Toast.makeText(MainActivity.this, "Please Enter Credit", Toast.LENGTH_SHORT).show();
-                        }
-                        if (!edGrade.getText().toString().equals("")) {
-                            GradeM = edGrade.getText().toString();
-                        } else {
-                            Toast.makeText(MainActivity.this, "Please Enter Grade", Toast.LENGTH_SHORT).show();
-                        }
-                        arrSub.add(new SubjectModel(SubjectName, GradeM, CreditM));
-                        adapter.notifyItemInserted(arrSub.size() - 1);
-                        Rv.scrollToPosition(arrSub.size() - 1);
-                        dialog.dismiss();
+               backgroundtext.setVisibility(View.INVISIBLE);
+
+            EditText edName = dialog.findViewById(R.id.ubjectNameD);
+            EditText edCredit = dialog.findViewById(R.id.CreditD);
+            EditText edGrade = dialog.findViewById(R.id.GradeD);
+            Button btnAction = dialog.findViewById(R.id.BtnD);
+
+            btnAction.setOnClickListener(view1 -> {
+                String subjectName = edName.getText().toString().trim();
+                String creditM = edCredit.getText().toString().trim();
+                String gradeM = edGrade.getText().toString().trim();
+
+                if (subjectName.isEmpty()) {
+                    edName.setError("Please Enter Subject Name");
+                    return;
+                }
+                if (creditM.isEmpty()) {
+                    edCredit.setError("Please Enter Credit");
+                    return;
+                }
+                if (gradeM.isEmpty()) {
+                    edGrade.setError("Please Enter Grade");
+                    return;
+                }
+
+                try {
+                    double credit = Double.parseDouble(creditM);
+                    if (credit <= 0) {
+                        edCredit.setError("Credit must be positive");
+                        return;
                     }
-                });
-                dialog.show();
-            }
+                } catch (NumberFormatException e) {
+                    edCredit.setError("Invalid credit value");
+                    return;
+                }
+
+                arrSub.add(new SubjectModel(subjectName, gradeM, creditM));
+                adapter.notifyItemInserted(arrSub.size() - 1);
+                Rv.scrollToPosition(arrSub.size() - 1);
+                dialog.dismiss();
+                Calculatebtn.setVisibility(View.VISIBLE);
+            });
+            dialog.show();
         });
 
         Calculatebtn = findViewById(R.id.Calculatebutton);
-        Calculatebtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                double sgpa = calculateSGPA();
-                TextView SGPA = findViewById(R.id.SGPA);
-                SGPA.setText(new DecimalFormat("##.##").format(sgpa));
-            }
+        Calculatebtn.setOnClickListener(view -> {
+            double sgpa = calculateSGPA();
+            TextView SGPA = findViewById(R.id.SGPA);
+            SGPA.setText(new DecimalFormat("##.##").format(sgpa));
         });
 
         Rv.setLayoutManager(new LinearLayoutManager(this));
         adapter = new RvAdapter(this, arrSub);
         Rv.setAdapter(adapter);
-
     }
 
+    private void fetchUserData() {
+        String userId = mAuth.getCurrentUser().getUid();
+        db.collection("users").document(userId).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            String name = document.getString("name");
+                            String college = document.getString("college");
+                            String gender = document.getString("gender");
+
+                            StudentName.setText(name);
+                            collegeName.setText(college);
+
+                            // Set the profile image based on gender
+                            if ("male".equalsIgnoreCase(gender)) {
+                                Dp.setImageResource(R.drawable.boy);
+                                helloTextView.setTextColor(getResources().getColor(R.color.Blue));
+                            } else if ("female".equalsIgnoreCase(gender)) {
+                                Dp.setImageResource(R.drawable.girl);
+                                helloTextView.setTextColor(getResources().getColor(R.color.Pink));
+                            } else {
+                                Dp.setImageResource(R.drawable.boy);
+                                helloTextView.setTextColor(getResources().getColor(R.color.Blue));
+                            }
+                        } else {
+                            Toast.makeText(MainActivity.this, "User data not found.", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(MainActivity.this, "Error fetching user data.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 
     private double calculateSGPA() {
         double totalCreditPoints = 0.0;
@@ -147,13 +169,8 @@ public class MainActivity extends AppCompatActivity {
             totalCredits += credit;
         }
 
-        if (totalCredits == 0) {
-            return 0.0;
-        }
-
-        return totalCreditPoints / totalCredits;
+        return totalCredits == 0 ? 0.0 : totalCreditPoints / totalCredits;
     }
-
 
     private double convertGradeToNumeric(String grade) {
         switch (grade) {
@@ -174,7 +191,5 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return 0.0;
         }
-
-
     }
 }

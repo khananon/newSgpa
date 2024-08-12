@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "621574238507",
+    "project_id": "newsgpa-4dc57",
+    "storage_bucket": "newsgpa-4dc57.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:621574238507:android:7d4067ccbb6cabebe1956e",
+        "android_client_info": {
+          "package_name": "com.example.newsgpa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvZaeskw1XvNtP3D_ZUBp4Bxt0j4m_M1M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
